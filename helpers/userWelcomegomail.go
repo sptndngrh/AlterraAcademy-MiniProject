@@ -15,7 +15,7 @@ func UserSendWelcomeEmail(userEmail, nama, UserTokenVerify string) error {
 
 	sender := usernameSmtp
 	recipient := userEmail
-	subject := "Selamat Datang di Sewakeun"
+	subject := "Selamat Datang di Sistem Penyewaan Sewakeun"
 	baseURL := "http://localhost:8000"
 	tokenVerifyLink := baseURL + "/verify/user?token=" + UserTokenVerify
 	emailBody := `
@@ -23,8 +23,9 @@ func UserSendWelcomeEmail(userEmail, nama, UserTokenVerify string) error {
     <head>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
             body {
-                font-family: Arial, sans-serif;
+                font-family: 'Roboto', sans-serif;
                 background-color: #f5f5f5;
             }
             .container {
@@ -57,29 +58,29 @@ func UserSendWelcomeEmail(userEmail, nama, UserTokenVerify string) error {
                 color: #666;
             }
             .btn-verify-email {
-                background-color: #ff6600;
+                background-color: #64CCC5;
                 color: #fff;
-                padding: 10px 20px;
-                border-radius: 5px;
+                padding: 12px 18px;
+                border-radius: 12px;
                 text-decoration: none;
                 display: block;
                 text-align: center;
                 margin: 20px auto;
             }
             .btn-verify-email:hover {
-                background-color: #ff3300;
+                background-color: #176B87;
             }
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>Selamat Datang Pengguna Baru di Sewakeun</h1>
+            <h1>Selamat Datang Pengguna 😊 Baru di Sewakeun</h1>
             <div class="message">
                 <p>Selamat datang, <strong>` + nama + `</strong>,</p>
                 <p>Terima kasih telah bergabung di sistem kami</p>
                 <p>Jika anda butuh bantuan silakan hubungi email berikut</p>
                 <p><strong>Support Team:</strong> <a href="mailto:septiandin92@gmail.com">septiandin92@gmail.com</a></p>
-                <a href="` + tokenVerifyLink + `" class="btn btn-verify-email">Verify Email</a>
+                <a href="` + tokenVerifyLink + `" class="btn btn-verify-email">Verifikasi akunmu disini...</a>
             </div>
             <div class="footer">
                 <p>&copy; Sewakeun . 2023 - All Rights Reserved</p>
