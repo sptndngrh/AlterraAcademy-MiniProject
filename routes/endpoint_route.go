@@ -33,7 +33,8 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	e.PUT("/change-password-user/user/:user_id", controllers.ChangePasswordUser(db, secretKey))
 	e.PUT("/change-name-owner/owner/:owner_id", controllers.ChangeNameOwner(db, secretKey))
 	e.PUT("/change-name-user/user/:user_id", controllers.ChangeNameUser(db, secretKey))
-
+	e.POST("/create-property/owner/:owner_id", controllers.OwnerCreateProperty(db, secretKey))
+	e.POST("/create-ticket/owner/:owner_id", controllers.OwnerCreateTicketController(db, secretKey))
 }
 
 func getSecretKeyFromEnv() string {

@@ -17,6 +17,7 @@ type Owner struct {
 	UpdatedAt        time.Time  `json:"update_at"`
 	DeletedAt        time.Time  `json:"delete_at"`
 	Properties       []Property `json:"properties" gorm:"foreignKey:OwnerID"`
+	Tickets          []Ticket   `json:"tickets" gorm:"foreignKey:OwnerID"`
 }
 
 func (u *Owner) TableName() string {
