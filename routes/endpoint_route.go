@@ -23,7 +23,6 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	// PUT
 	e.PUT("/user/change-username/:id", controllers.ChangeUsername(db, secretKey))
 	e.PUT("/user/change-password/:id", controllers.ChangePassword(db, secretKey))
-	e.PUT("/updatePaymentStatus", controllers.UpdatePaymentStatus(db, secretKey))
 	// DELETE
 }
 

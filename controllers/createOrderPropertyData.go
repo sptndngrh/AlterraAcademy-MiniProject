@@ -66,6 +66,12 @@ func CreateOrderingProperty(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 			return c.JSON(http.StatusNotFound, errorResponse)
 		}
 
+		// Memeriksa apakah properti sudah tersewa
+		if propertyData.StatusTersewa {
+			errorResponse := response.ErrorResponse{Code: http.StatusConflict, Message: "Maaf, properti sudah disewakan, silakan cari lagi menurut pilihan anda"}
+			return c.JSON(http.StatusConflict, errorResponse)
+		}
+
 		// Menghitung PaymentTotal
 		bulanan := CreateOrderData.Bulanan
 		hargaProperti := propertyData.Harga
@@ -74,6 +80,10 @@ func CreateOrderingProperty(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 		// Menghitung start date (waktu saat ini) dan end date berdasarkan bulanan
 		startDate := time.Now()
 		endDate := startDate.AddDate(0, bulanan, 0)
+
+		// Mengatur StatusTersewa properti yang dipesan menjadi true
+		propertyData.StatusTersewa = true
+		db.Save(&propertyData)
 
 		// Membuat orderedProperty dari data yang dihitung
 		orderData := models.Order{
@@ -92,12 +102,6 @@ func CreateOrderingProperty(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, errorResponse)
 		}
 
-		// Memeriksa apakah properti sudah tersewa
-		if propertyData.StatusTersewa {
-			errorResponse := response.ErrorResponse{Code: http.StatusConflict, Message: "Maaf, properti sudah disewakan, silakan cari lagi menurut pilihan anda"}
-			return c.JSON(http.StatusConflict, errorResponse)
-		}
-
 		// Kirim email notifikasi
 		if err := sendPaymentConfirmationEmail(userRole.Email, orderData); err != nil {
 			// Handle kesalahan pengiriman email
@@ -106,10 +110,6 @@ func CreateOrderingProperty(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 				"message": "Gagal mengirim email konfirmasi pembayaran",
 			})
 		}
-
-		// Mengatur StatusTersewa properti yang dipesan menjadi true
-		propertyData.StatusTersewa = true
-		db.Save(&propertyData)
 
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"PropertyData": propertyData,
