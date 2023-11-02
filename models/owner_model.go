@@ -5,7 +5,7 @@ import (
 )
 
 type Owner struct {
-	OwnerID          uint       `gorm:"primaryKey;not null;autoIncrement" json:"owner_id"`
+	Id               uint       `gorm:"primaryKey;not null;autoIncrement" json:"id"`
 	Nama             string     `json:"nama"`
 	NoTelp           string     `json:"no_telp"`
 	Username         string     `json:"username"`
@@ -16,8 +16,7 @@ type Owner struct {
 	CreatedAt        time.Time  `json:"created_at"`
 	UpdatedAt        time.Time  `json:"update_at"`
 	DeletedAt        time.Time  `json:"delete_at"`
-	Properties       []Property `json:"properties" gorm:"foreignKey:OwnerID"`
-	Tickets          []Ticket   `json:"tickets" gorm:"foreignKey:OwnerID"`
+	Properties       []Property `gorm:"foreignKey:OwnerId"`
 }
 
 func (u *Owner) TableName() string {
