@@ -103,11 +103,11 @@ func RegisterOwner(db *gorm.DB, ownerSecretKey []byte) echo.HandlerFunc {
 		}
 
 		return c.JSON(
-			http.StatusOK, 
-			map[string]interface{}{"code": http.StatusOK, 
-								   "error": false, 
-								   "message": "Pengguna berhasil didaftarkan, Silakan cek email untuk verifikasi lebih lanjut", 
-								   "token": tokenString, 
-								   "id": owner.OwnerID})
+			http.StatusOK,
+			map[string]interface{}{"code": http.StatusOK,
+				"error":   false,
+				"message": "Pengguna berhasil didaftarkan, Silakan cek email untuk verifikasi lebih lanjut",
+				"token":   tokenString,
+				"id":      owner.Id})
 	}
 }

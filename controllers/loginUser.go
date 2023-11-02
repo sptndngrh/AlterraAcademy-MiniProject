@@ -12,64 +12,54 @@ import (
 	"gorm.io/gorm"
 )
 
-func LoginUser(db *gorm.DB, userSecretKey []byte) echo.HandlerFunc {
+func LoginUser(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user models.User
-
 		if err := c.Bind(&user); err != nil {
-			errorResponse := response.ErrorResponse{
-				Code:    http.StatusBadRequest,
-				Message: err.Error(),
-			}
+			errorResponse := response.ErrorResponse{Code: http.StatusBadRequest, Message: err.Error()}
 			return c.JSON(http.StatusBadRequest, errorResponse)
 		}
 
-		// Mengecek persamaan username dalam database
+		// Mengecek apakah username ada dalam database
 		var existingUser models.User
 		result := db.Where("username = ?", user.Username).First(&existingUser)
 		if result.Error != nil {
 			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				errorResponse := response.ErrorResponse{
-					Code:    http.StatusUnauthorized,
-					Message: "User tidak ditemukan nih...",
-				}
+				errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Nama pengguna atau password salah"}
 				return c.JSON(http.StatusUnauthorized, errorResponse)
 			} else {
-				errorResponse := response.ErrorResponse{
-					Code:    http.StatusInternalServerError,
-					Message: "Gagal dalam mengecek username",
-				}
+				errorResponse := response.ErrorResponse{Code: http.StatusInternalServerError, Message: "Gagal memeriksa username"}
 				return c.JSON(http.StatusInternalServerError, errorResponse)
 			}
 		}
 
-		// Cek apakah role ini sudah verifikasi
-		if !existingUser.DoneVerify {
-			errorResponse := response.ErrorResponse{
-				Code:    http.StatusUnauthorized,
-				Message: "Email belum terverifikasi. Silakan verifikasi email Anda terlebih dahulu.",
-			}
+		// Membandingkan password yang dimasukkan dengan password yang di-hash
+		err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password))
+		if err != nil {
+			errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Nama pengguna atau password yang di hash salah"}
 			return c.JSON(http.StatusUnauthorized, errorResponse)
 		}
 
-		// Bandingkan password yang diinput dengan yang dihash
-		err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(user.Password))
-		if err != nil {
-			errorResponse := response.ErrorResponse{
-				Code:    http.StatusUnauthorized,
-				Message: "Password salah",
-			}
+		// Mengecek apakah pengguna adalah owner
+		if existingUser.OwnerRole {
+			errorResponse := response.ErrorResponse{Code: http.StatusForbidden, Message: "Anda tidak memiliki akses untuk login sebagai owner"}
+			return c.JSON(http.StatusForbidden, errorResponse)
+		}
+
+		// Mengecek apakah pengguna sudah melakukan verifikasi email
+		if !existingUser.DoneVerify {
+			errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Akun anda belum verified. Silahkan lakukan verifikasi email terlebih dahulu"}
 			return c.JSON(http.StatusUnauthorized, errorResponse)
 		}
 
 		// Generate JWT token
-		tokenString, err := middlewares.UserGenerateToken(existingUser.Username, userSecretKey)
+		tokenString, err := middlewares.GenerateToken(existingUser.Username, secretKey)
 		if err != nil {
-			errorResponse := response.ErrorResponse{Code: http.StatusInternalServerError, Message: "Gagal untuk generate token"}
+			errorResponse := response.ErrorResponse{Code: http.StatusInternalServerError, Message: "Gagal generate token"}
 			return c.JSON(http.StatusInternalServerError, errorResponse)
 		}
 
-		// Return the token and user ID
-		return c.JSON(http.StatusOK, map[string]interface{}{"code": http.StatusOK, "error": false, "message": "Login user berhasil", "token": tokenString, "id": existingUser.UserID})
+		// Menyertakan ID pengguna dalam respons
+		return c.JSON(http.StatusOK, map[string]interface{}{"code": http.StatusOK, "error": false, "message": "Sukses Login Sebagai Pengguna", "token": tokenString, "id": existingUser.Id})
 	}
 }

@@ -33,8 +33,8 @@ func OwnerSendWelcomeEmail(userEmail, nama, OwnerTokenVerify string) error {
                 margin: 0 auto;
                 padding: 20px;
                 background-color: #fff;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                border-radius: 5px;
+                box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+                border-radius: 20px;
             }
             h1 {
                 text-align: center;
@@ -79,7 +79,8 @@ func OwnerSendWelcomeEmail(userEmail, nama, OwnerTokenVerify string) error {
                 <p>Selamat datang, <strong>` + nama + `</strong>,</p>
                 <p>Terima kasih telah bergabung di sistem kami, perkembangan bisnis properti anda akan segera dimulai</p>
                 <p>Jika anda butuh bantuan silakan hubungi email berikut</p>
-                <p><strong>Support Team:</strong> <a href="mailto:septiandin92@gmail.com">septiandin92@gmail.com</a></p>
+                <p><strong>Email    :</strong> <a href="mailto:septiandin92@gmail.com">septiandin92@gmail.com</a></p>
+                <p><strong>No Telp  :</strong> <a href="mailto:septiandin92@gmail.com">septiandin92@gmail.com</a></p>
                 <a href="` + tokenVerifyLink + `" class="btn btn-verify-email">Verifikasi akunmu disini...</a>
             </div>
             <div class="footer">

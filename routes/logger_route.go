@@ -13,7 +13,7 @@ func LoggerRoute() echo.MiddlewareFunc {
 			start := time.Now()
 
 			err := next(c)
-			
+
 			end := time.Now()
 
 			latency := end.Sub(start)

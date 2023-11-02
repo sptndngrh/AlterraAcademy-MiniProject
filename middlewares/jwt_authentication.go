@@ -7,17 +7,17 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type UserClaims struct {
+type UserClaimsJWT struct {
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
-func UserGenerateToken(username string, userSecretKey []byte) (string, error) {
+func GenerateToken(username string, secretKey []byte) (string, error) {
 	// Durasi berlakunya token
 	expDate := time.Now().Add(24 * time.Hour)
 
 	// Membuat JWT Claims
-	claims := &OwnerClaims{
+	claims := &UserClaimsJWT{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expDate.Unix(),
@@ -29,16 +29,16 @@ func UserGenerateToken(username string, userSecretKey []byte) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Tanda tangan token dengan secret key
-	tokenStr, err := token.SignedString(userSecretKey)
+	tokenStr, err := token.SignedString(secretKey)
 	if err != nil {
 		return "", err
 	}
 	return tokenStr, nil
 }
 
-func UserVerifyToken(tokenStr string, userSecretKey []byte) (string, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &OwnerClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return userSecretKey, nil
+func VerifyTokenJWT(tokenStr string, secretKey []byte) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &UserClaimsJWT{}, func(token *jwt.Token) (interface{}, error) {
+		return secretKey, nil
 	})
 
 	if err != nil {
@@ -46,7 +46,7 @@ func UserVerifyToken(tokenStr string, userSecretKey []byte) (string, error) {
 	}
 
 	// Validasi token
-	if claims, ok := token.Claims.(*OwnerClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*UserClaimsJWT); ok && token.Valid {
 		return claims.Username, nil
 	} else {
 		return "", errors.New("invalid token")
