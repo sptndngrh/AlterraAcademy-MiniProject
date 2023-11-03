@@ -42,7 +42,7 @@ func ChangeNameUser(db *gorm.DB) echo.HandlerFunc {
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"code":    http.StatusOK,
 			"error":   false,
-			"message": "Username berhasil diperbarui",
+			"message": "Nama berhasil diperbarui",
 			"user":    user, // Sertakan data pengguna yang diperbarui dalam respons
 		})
 	}

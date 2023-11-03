@@ -116,7 +116,54 @@ func CreateOrderingProperty(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 			"OrderData":    orderData,
 			"code":         http.StatusOK,
 			"error":        false,
-			"message":      "Data property berhasil ditambahkan",
+			"message":      "Order berhasil ditambahkan. Silakan cek email anda untuk pembayaran",
 		})
 	}
+}
+
+func GetAllUserOrders(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
+    return func(c echo.Context) error {
+        // Memeriksa token otorisasi
+        authHeader := c.Request().Header.Get("Authorization")
+        if authHeader == "" {
+            errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Token otorisasi tidak ditemukan"}
+            return c.JSON(http.StatusUnauthorized, errorResponse)
+        }
+
+        authParts := strings.SplitN(authHeader, " ", 2)
+        if len(authParts) != 2 || authParts[0] != "Bearer" {
+            errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Format token tidak valid"}
+            return c.JSON(http.StatusUnauthorized, errorResponse)
+        }
+
+        tokenString := authParts[1]
+
+        username, err := middlewares.VerifyTokenJWT(tokenString, secretKey)
+        if err != nil {
+            errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Token otorisasi tidak valid"}
+            return c.JSON(http.StatusUnauthorized, errorResponse)
+        }
+
+        // Dapatkan ID pengguna dari token otorisasi
+        var user models.User
+        result := db.Where("username = ?", username).First(&user)
+        if result.Error != nil {
+            errorResponse := response.ErrorResponse{Code: http.StatusNotFound, Message: "Pengguna tidak ditemukan"}
+            return c.JSON(http.StatusNotFound, errorResponse)
+        }
+
+        // Query order yang telah diambil oleh pengguna
+        var orders []models.Order
+        if err := db.Where("user_id = ?", user.Id).Find(&orders).Error; err != nil {
+            errorResponse := response.ErrorResponse{Code: http.StatusInternalServerError, Message: "Gagal mengambil data order pengguna"}
+            return c.JSON(http.StatusInternalServerError, errorResponse)
+        }
+
+        return c.JSON(http.StatusOK, map[string]interface{}{
+            "orders":   orders,
+            "code":     http.StatusOK,
+            "error":    false,
+            "message":  "Daftar order pengguna berhasil diambil",
+        })
+    }
 }
