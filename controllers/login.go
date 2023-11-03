@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func LoginUser(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
+func Login(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user models.User
 		if err := c.Bind(&user); err != nil {
@@ -40,17 +40,11 @@ func LoginUser(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, errorResponse)
 		}
 
-		// Mengecek apakah pengguna adalah owner
-		if existingUser.OwnerRole {
-			errorResponse := response.ErrorResponse{Code: http.StatusForbidden, Message: "Anda tidak memiliki akses untuk login sebagai owner"}
-			return c.JSON(http.StatusForbidden, errorResponse)
-		}
-
 		// Mengecek apakah pengguna sudah melakukan verifikasi email
 		if !existingUser.DoneVerify {
 			errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Akun anda belum verified. Silahkan lakukan verifikasi email terlebih dahulu"}
 			return c.JSON(http.StatusUnauthorized, errorResponse)
-		}
+		} 
 
 		// Generate JWT token
 		tokenString, err := middlewares.GenerateToken(existingUser.Username, secretKey)

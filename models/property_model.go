@@ -6,7 +6,7 @@ import (
 
 type Property struct {
 	Id            uint       `gorm:"primaryKey;not null;autoIncrement" json:"id"`
-	OwnerId       uint       `gorm:"foreignKey:OwnerId" json:"owner_id"`
+	OwnerId        uint       `gorm:"foreignKey:UserId" json:"owner_id"`
 	Judul         string     `json:"judul"`
 	Tipe          string     `json:"tipe"`
 	Harga         int        `json:"harga"` // Harga untuk property untuk setiap bulannya
