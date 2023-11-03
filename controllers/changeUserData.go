@@ -56,6 +56,7 @@ func ChangeUsername(db *gorm.DB, secretKey []byte) echo.HandlerFunc {
 			return c.JSON(http.StatusUnauthorized, errorResponse)
 		}
 
+		// redudancy
 		authParts := strings.SplitN(tokenString, " ", 2)
 		if len(authParts) != 2 || authParts[0] != "Bearer" {
 			errorResponse := response.ErrorResponse{Code: http.StatusUnauthorized, Message: "Format token tidak valid"}
