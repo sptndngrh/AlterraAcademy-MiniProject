@@ -13,7 +13,7 @@ func main() {
 	}
 
 	routes := configs.SetupRoutes()
-	err := routes.Start(":8000")
+	err := routes.Start(":8080")
 	if err != nil {
 		log.Fatal(err)
 	}
