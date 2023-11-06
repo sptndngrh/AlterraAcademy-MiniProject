@@ -57,4 +57,4 @@ jobs:
               -e DBHOST=${{ secrets.DBHOST }} \
               -e DBPORT=${{ secrets.DBPORT }} \
               -e DBNAME=${{ secrets.DBNAME }} \
-              --name sptndngrh ${{ secrets.DOCKERNAME }}/alterra-miniproject-sptndngrh:latest
+              --name sptndngrh ${{ secrets.DOCKERNAME }}/alterra-miniproject-sptndngrh:latest 
