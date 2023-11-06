@@ -16,7 +16,7 @@ func SendWelcomeEmail(userEmail, nama, VerifyTokenJWT string) error {
 	sender := usernameSmtp
 	recipient := userEmail
 	subject := "Selamat Datang di Sistem Penyewaan Sewakeun"
-	baseURL := "http://localhost:8000"
+	baseURL := "http://localhost:8080"
 	tokenVerifyLink := baseURL + "/verify?token=" + VerifyTokenJWT
 	emailBody := `
     <html>

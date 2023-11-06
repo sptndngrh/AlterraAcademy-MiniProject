@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	Id             uint      `gorm:"primaryKey;not null;autoIncrement" json:"id"`
+	Id             uint      `gorm:"primaryKey" json:"id"`
 	Nama           string    `json:"nama"`
 	NoTelp         string    `json:"no_telp"`
 	Username       string    `json:"username"`
@@ -16,7 +16,7 @@ type User struct {
 	JWTTokenVerify string    `json:"jwt_token_verify"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"update_at"`
-	DeletedAt      time.Time `json:"delete_at"`
+	// DeletedAt      time.Time `json:"delete_at"`
 	Orders         []Order   `gorm:"foreignKey:UserId"`
 }
 
